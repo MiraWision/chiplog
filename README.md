@@ -24,7 +24,7 @@ Zero dependencies. Bring your own logger.
 
 **Safety** · [Redaction](#redaction) · [Limits](#limits)
 
-**Integration** · [Hono](#hono) · [Any framework](#any-framework) · [Sinks](#sinks)
+**Integration** · [Hono](#hono) · [Elysia](#elysia) · [Any framework](#any-framework) · [Sinks](#sinks)
 
 **Reference** · [API](#api) · [Notes and limits](#notes-and-limits)
 
@@ -259,6 +259,27 @@ Wraps every request in a flow, seeds it from inbound headers, labels it by match
 returns the correlation id in `x-correlation-id`, and marks the flow failed when Hono caught a
 handler exception.
 
+## Elysia
+
+```ts
+import { elysiaChiplog } from "chiplog/elysia";
+
+new Elysia().use(elysiaChiplog(chiplog)).get("/users/:id", handler);
+```
+
+Same event, same fields, plus `errorCode` from Elysia's error classification. A 404 or a failed
+body validation is recorded as a normal outcome with its status, not as a failed flow — those are
+answers, not incidents. Override with `failed`:
+
+```ts
+elysiaChiplog(chiplog, { failed: ({ code, error }) => (code === "VALIDATION" ? error : undefined) });
+```
+
+Elysia's lifecycle is a set of hooks rather than a middleware wrapping `next()`, so there is nothing
+to run the request inside. The adapter binds the flow to the request's async context in `onRequest`
+and flushes in `onAfterResponse`, which fires on every path — success, thrown handler and 404 alike.
+The manual pairing lives in the adapter; your code still only calls `stage()`.
+
 ## Any framework
 
 The core is framework-agnostic; an adapter is a few lines:
@@ -300,6 +321,7 @@ createChiplog(options): Chiplog
   .runSync(label, fn, seed?)  // synchronous variant
   .wrap(label, fn)            // every call becomes a flow
   .seedFromHeaders(get)       // traceparent / x-correlation-id / x-request-id
+  .begin(label, seed?)        // manual pairing for hook-based frameworks; you own end()
 
 // ambient — operate on the flow in scope, no-ops outside one
 stage(name, meta?)
@@ -312,7 +334,8 @@ parseTraceparent(value), formatTraceparent(traceId, spanId, sampled?)
 ```
 
 The `Flow` handle passed to `fn`: `stage()`, `set()`, `fail()`, `rename()`, `label()`,
-`traceparent()`, `correlationId`, `flowId`.
+`traceparent()`, `correlationId`, `flowId`. `begin()` returns an `ActiveFlow` — the same handle plus
+`enter()` and `end()`.
 
 ## Notes and limits
 
@@ -326,6 +349,11 @@ The `Flow` handle passed to `fn`: `stage()`, `set()`, `fail()`, `rename()`, `lab
 - **Parallel stages.** Stages from concurrent branches inside a single flow are recorded in
   completion order. That is faithful, but it means the sequence is not a causal chain; use nested
   flows when the branches matter separately.
+- **Hook-based frameworks.** Where a request cannot be wrapped, `begin()` + `enter()` uses
+  `AsyncLocalStorage.enterWith`, which mutates the current execution context rather than creating
+  one. The store can therefore outlive the request in the caller's context. That is inert, not
+  wrong: a flushed flow ignores everything, so a stray ambient call cannot append to a shipped event.
+  `begin()` never adopts an ambient parent for the same reason.
 - **Sampling** is not built in. Sample in your sink if volume needs it — everything required to
   decide is on the event.
 

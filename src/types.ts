@@ -141,6 +141,25 @@ export interface Flow {
   traceparent(): string;
 }
 
+/**
+ * A flow whose lifetime the caller manages.
+ *
+ * `run()` is the API to reach for: it pairs start and finish for you and cannot
+ * be forgotten. This exists for frameworks whose lifecycle is a set of hooks
+ * rather than a wrapping middleware — Elysia, Fastify — where there is no
+ * `next()` to await around, so nothing can wrap the request. An adapter owns
+ * the pairing; application code should not.
+ */
+export interface ActiveFlow extends Flow {
+  /**
+   * Binds this flow to the current async context so ambient `stage()` finds it
+   * further down the stack, without a callback to run inside.
+   */
+  enter(): void;
+  /** Flushes the event. One-shot; later calls are ignored. */
+  end(): void;
+}
+
 /** Seed values for a flow, usually recovered from an inbound request. */
 export interface FlowSeed {
   correlationId?: string;

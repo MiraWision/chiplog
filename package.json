@@ -1,7 +1,7 @@
 {
   "name": "chiplog",
   "version": "0.1.0",
-  "description": "One wide log event per operation instead of scattered lines: accumulate named stages through the whole call stack, flush a single record on the way out — readable by a human, greppable by a machine, diagnosable by an agent.",
+  "description": "One wide log event per operation instead of scattered lines: accumulate named stages through the whole call stack, flush a single record on the way out \u2014 readable by a human, greppable by a machine, diagnosable by an agent.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -16,6 +16,11 @@
       "types": "./dist/hono.d.ts",
       "import": "./dist/hono.js",
       "require": "./dist/hono.cjs"
+    },
+    "./elysia": {
+      "types": "./dist/elysia.d.ts",
+      "import": "./dist/elysia.js",
+      "require": "./dist/elysia.cjs"
     }
   },
   "files": [
@@ -45,6 +50,7 @@
     "asynclocalstorage",
     "request-context",
     "tracing",
+    "elysia",
     "typescript"
   ],
   "author": "Yelysei Lukin <yelysei277@gmail.com>",
@@ -61,19 +67,23 @@
     "node": ">=18"
   },
   "sideEffects": false,
-  "dependencies": {},
   "devDependencies": {
     "@types/node": "^26.1.1",
+    "elysia": "^1.4.29",
     "hono": "^4.6.0",
     "tsup": "^8.5.1",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "hono": ">=4"
+    "hono": ">=4",
+    "elysia": ">=1.1"
   },
   "peerDependenciesMeta": {
     "hono": {
+      "optional": true
+    },
+    "elysia": {
       "optional": true
     }
   }

@@ -11,6 +11,7 @@ export {
 export { formatTraceparent, parseTraceparent, type TraceIds } from "./ids";
 export { redactKeys } from "./redact";
 export type {
+  ActiveFlow,
   ChiplogLimits,
   ChiplogOptions,
   Flow,

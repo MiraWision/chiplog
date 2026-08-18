@@ -1,7 +1,7 @@
 import { flowStorage } from "./context";
 import { FlowState, type ResolvedOptions } from "./flow";
 import { parseTraceparent, randomHex as defaultRandomHex } from "./ids";
-import type { ChiplogOptions, Flow, FlowSeed, Meta } from "./types";
+import type { ActiveFlow, ChiplogOptions, Flow, FlowSeed, Meta } from "./types";
 
 /** Header names read when recovering a flow started upstream, in priority order. */
 export const CORRELATION_HEADERS = ["x-correlation-id", "x-request-id"] as const;
@@ -24,6 +24,16 @@ export interface Chiplog {
     label: string,
     fn: (...args: A) => Promise<R> | R,
   ): (...args: A) => Promise<R>;
+  /**
+   * Starts a flow the caller must finish with `end()`.
+   *
+   * Prefer `run()`. This is the escape hatch for hook-based frameworks, where
+   * the request cannot be wrapped in a callback — see the Elysia adapter.
+   *
+   * The flow is always a root: it never adopts an ambient parent. Use `run()`
+   * for nesting.
+   */
+  begin(label: string, seed?: FlowSeed): ActiveFlow;
   /**
    * Builds a seed from inbound headers: a valid `traceparent` continues the
    * upstream trace, otherwise `x-correlation-id` / `x-request-id` is adopted as
@@ -67,8 +77,8 @@ function resolve(options: ChiplogOptions): ResolvedOptions {
 export function createChiplog(options: ChiplogOptions): Chiplog {
   const resolved = resolve(options);
 
-  function start(label: string, seed: FlowSeed): FlowState {
-    const parent = flowStorage.getStore();
+  function start(label: string, seed: FlowSeed, inherit: boolean): FlowState {
+    const parent = inherit ? flowStorage.getStore() : undefined;
     const upstream = parseTraceparent(seed.traceparent);
     const traceId = upstream?.traceId ?? parent?.traceId ?? resolved.randomHex(16);
     const spanId = resolved.randomHex(8);
@@ -77,7 +87,7 @@ export function createChiplog(options: ChiplogOptions): Chiplog {
 
   return {
     async run(label, fn, seed = {}) {
-      const state = start(label, seed);
+      const state = start(label, seed, true);
       return flowStorage.run(state, async () => {
         try {
           return await fn(state.handle());
@@ -91,7 +101,7 @@ export function createChiplog(options: ChiplogOptions): Chiplog {
     },
 
     runSync(label, fn, seed = {}) {
-      const state = start(label, seed);
+      const state = start(label, seed, true);
       return flowStorage.run(state, () => {
         try {
           return fn(state.handle());
@@ -106,6 +116,19 @@ export function createChiplog(options: ChiplogOptions): Chiplog {
 
     wrap(label, fn) {
       return (...args) => this.run(label, () => fn(...args));
+    },
+
+    begin(label, seed = {}) {
+      // Always a root. `enter()` uses `enterWith`, which mutates the current
+      // execution context rather than creating one, so a previous request's
+      // flow can still be visible here — inheriting it would chain every
+      // request in a process onto the correlation id of the first.
+      const state = start(label, seed, false);
+      return {
+        ...state.handle(),
+        enter: () => flowStorage.enterWith(state),
+        end: () => state.flush(),
+      };
     },
 
     seedFromHeaders(get) {
