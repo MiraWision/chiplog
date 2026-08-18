@@ -1,0 +1,80 @@
+{
+  "name": "chiplog",
+  "version": "0.1.0",
+  "description": "One wide log event per operation instead of scattered lines: accumulate named stages through the whole call stack, flush a single record on the way out — readable by a human, greppable by a machine, diagnosable by an agent.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./hono": {
+      "types": "./dist/hono.d.ts",
+      "import": "./dist/hono.js",
+      "require": "./dist/hono.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "pack": "npm pack",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "chiplog",
+    "logging",
+    "logger",
+    "canonical-log-lines",
+    "wide-events",
+    "structured-logging",
+    "observability",
+    "correlation-id",
+    "traceparent",
+    "asynclocalstorage",
+    "request-context",
+    "tracing",
+    "typescript"
+  ],
+  "author": "Yelysei Lukin <yelysei277@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MiraWision/chiplog.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MiraWision/chiplog/issues"
+  },
+  "homepage": "https://chiplog.dev",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "sideEffects": false,
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "hono": "^4.6.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "hono": ">=4"
+  },
+  "peerDependenciesMeta": {
+    "hono": {
+      "optional": true
+    }
+  }
+}
