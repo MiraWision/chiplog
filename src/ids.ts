@@ -3,15 +3,26 @@
  * you move across a queue or an HTTP hop is a standard `traceparent`, so it
  * interoperates with OpenTelemetry and every proxy that already understands it.
  *
- * Uses the Web Crypto API, present in Node 18+, Bun, Deno and workers.
+ * Uses the Web Crypto API.
  */
+import { webcrypto } from "node:crypto";
 
 const HEX = "0123456789abcdef";
+
+/**
+ * `globalThis.crypto` only became available unflagged in Node 19, and this
+ * package supports 18 — so the global is preferred and `node:crypto` fills in
+ * where it is missing. Resolved per call, not at module load, so a runtime that
+ * installs the global later is still the one that gets used.
+ */
+function entropy(): Pick<Crypto, "getRandomValues"> {
+  return globalThis.crypto ?? (webcrypto as unknown as Crypto);
+}
 
 /** Random lowercase hex string of `bytes` bytes (so `bytes * 2` characters). */
 export function randomHex(bytes: number): string {
   const buf = new Uint8Array(bytes);
-  globalThis.crypto.getRandomValues(buf);
+  entropy().getRandomValues(buf);
   let out = "";
   for (const byte of buf) {
     out += HEX[byte >> 4]! + HEX[byte & 0x0f]!;

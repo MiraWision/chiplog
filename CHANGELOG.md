@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `redact` hook and the `redactKeys()` helper.
 - Reserved-key collisions from `set()` are reported in `shadowedFields` rather
   than dropped silently.
-- `chiplog/hono` and `chiplog/elysia` adapters.
+- `chiplog/hono` and `chiplog/elysia` adapters. The Elysia one requires Node 20+,
+  a constraint Elysia imposes rather than chiplog.
 - `begin()` / `ActiveFlow` — manual pairing for frameworks whose lifecycle is a set
   of hooks rather than a wrapping middleware. Always starts a root flow.

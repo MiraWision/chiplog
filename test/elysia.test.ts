@@ -14,7 +14,14 @@ type Handleable = { handle: (request: Request) => Promise<Response> };
 const get = (app: Handleable, path: string, headers?: Record<string, string>) =>
   app.handle(new Request(`http://localhost${path}`, headers ? { headers } : undefined));
 
-describe("elysia adapter", () => {
+/**
+ * Elysia requires Node 20+: its own code reaches for the global `crypto`, which
+ * Node 18 does not define. chiplog's core supports 18, and the rest of the suite
+ * proves it there — only this adapter is gated.
+ */
+const NODE_MAJOR = Number(process.versions.node.split(".")[0]);
+
+describe.skipIf(NODE_MAJOR < 20)("elysia adapter", () => {
   it("wraps a request, labels it by route pattern and returns the correlation id", async () => {
     const { chiplog, events } = harness();
     const app = new Elysia()

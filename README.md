@@ -340,7 +340,8 @@ The `Flow` handle passed to `fn`: `stage()`, `set()`, `fail()`, `rename()`, `lab
 ## Notes and limits
 
 - **Runtime.** `AsyncLocalStorage` is required: Node 18+, Bun and Deno support it; Cloudflare Workers
-  need a compatibility flag. It is the only runtime-specific import, isolated in one module.
+  need a compatibility flag. The `chiplog/elysia` adapter needs Node 20+, because Elysia itself
+  reaches for the global `crypto` that Node 18 does not define.
 - **Not a logger.** No levels, transports, formatting or file rotation. It produces one object and
   gives it to yours.
 - **Not a replacement for tracing.** Distributed tracing answers "where did time go across twenty
