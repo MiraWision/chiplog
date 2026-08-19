@@ -23,11 +23,11 @@ theme needs no reload.
 
 The route, sitemap entry, metadata, table of contents and navigation follow from that.
 
-## Outstanding
+## Social card
 
-`public/og-image.png` (1200×630) does not exist yet; `public/og-image.svg` is the source. Social
-cards will not render until it is rasterised:
+`public/og-image.svg` is the source; `public/og-image.png` is the 1200×630 render that the metadata
+points at. After editing the SVG, re-render it:
 
 ```bash
-rsvg-convert -w 1200 -h 630 public/og-image.svg -o public/og-image.png
+node -e "require('sharp')('public/og-image.svg',{density:200}).resize(1200,630).png().toFile('public/og-image.png')"
 ```
