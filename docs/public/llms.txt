@@ -1,0 +1,32 @@
+# chiplog
+
+> One wide log event per operation for Node, instead of scattered lines you have to reassemble.
+> Also known as canonical log lines (Stripe) or wide events.
+
+chiplog accumulates named stages through a whole operation — at any depth, via AsyncLocalStorage,
+with nothing threaded through call signatures — and flushes a single record when the operation
+settles. Zero dependencies; the sink is supplied by the caller, so it never competes with the
+logger already in the project.
+
+Key properties:
+- `run(label, fn)` is a wrapper, not a start/end pair: an exception is attributed to the stage that
+  was running and rethrown unchanged, so a flow that threw cannot report `ok`.
+- Everything entering an event is bounded (stages, depth, width, string length) and passed through a
+  redaction hook, so one pathological flow cannot break the log pipeline or leak PII.
+- W3C `traceparent` is the carrier across services and queues; no bespoke format.
+- Reserved-key collisions from `set()` are reported in `shadowedFields`, never silently dropped.
+
+## Docs
+
+- [Quick start](https://chiplog.dev/docs/quick-start/): install, sink, first flow
+- [Stages and fields](https://chiplog.dev/docs/stages/): ambient recording, naming, `set()`
+- [Failures](https://chiplog.dev/docs/failures/): attribution, non-Error throws, `fail()`
+- [Correlation](https://chiplog.dev/docs/correlation/): traceparent, queues, nested flows
+- [Redaction and limits](https://chiplog.dev/docs/safety/): PII hook, bounds, hostile values
+- [Adapters](https://chiplog.dev/docs/adapters/): Hono, Elysia, writing your own
+- [API reference](https://chiplog.dev/docs/api/): every export and option
+
+## Source
+
+- [GitHub](https://github.com/MiraWision/chiplog)
+- [npm](https://www.npmjs.com/package/chiplog)

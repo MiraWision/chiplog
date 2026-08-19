@@ -1,0 +1,294 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  --color-ink: #18181b;
+  --color-ink-2: #3f3f46;
+  --color-muted: #71717a;
+  --color-line: #e4e4e7;
+  --color-surface: #ffffff;
+  --color-canvas: #fafafa;
+
+  /* One accent: the rope and the water. Primary actions, section eyebrows,
+     and the spine of the before/after comparison. */
+  --color-brand: #0f766e;
+  --color-brand-ink: #ffffff;
+
+  /* Outcome colours, because the library's whole job is ok / failed. */
+  --color-pass: #15803d;
+  --color-fail: #be123c;
+  --color-gap: #b45309;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-ink: #fafafa;
+    --color-ink-2: #d4d4d8;
+    --color-muted: #a1a1aa;
+    --color-line: #27272a;
+    --color-surface: #161618;
+    --color-canvas: #0b0b0d;
+    /* Lifted for contrast on a near-black canvas; the same roles. */
+    --color-brand: #5eead4;
+    --color-brand-ink: #0b0b0d;
+    --color-pass: #4ade80;
+    --color-fail: #fb7185;
+    --color-gap: #fbbf24;
+  }
+}
+
+html {
+  background: var(--color-canvas);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Rope-knot backdrop for the hero: faint horizontal rules with regular ticks,
+   fading out before they reach the content. */
+.rope-bg {
+  background-image: repeating-linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-ink) 5%, transparent) 0 1px,
+      transparent 1px 44px
+    ),
+    repeating-linear-gradient(
+      to right,
+      color-mix(in oklab, var(--color-brand) 22%, transparent) 0 2px,
+      transparent 2px 88px
+    );
+  mask-image: radial-gradient(ellipse 75% 60% at 50% 0%, #000 30%, transparent 78%);
+}
+
+/* ---------- code ---------- */
+
+.code-block {
+  position: relative;
+  margin: 0;
+}
+
+.code-block figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  padding: 0 0 0.5rem;
+}
+
+.code-block pre.shiki {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  padding: 1rem 1.1rem;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  background: var(--color-surface) !important;
+}
+
+.code-block code {
+  font-family: var(--font-mono);
+}
+
+/* Shiki emits both themes per token; pick one by the reader's system setting,
+   so flipping it needs no reload and shows no flash. */
+.shiki span {
+  color: var(--shiki-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  .shiki span {
+    color: var(--shiki-dark);
+  }
+}
+
+.copy-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+  font-size: 0.6875rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+  padding: 0.25rem 0.55rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-canvas);
+  color: var(--color-muted);
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+}
+
+.code-block:hover .copy-button,
+.copy-button:focus-visible {
+  opacity: 1;
+}
+
+.copy-button:hover {
+  color: var(--color-ink);
+}
+
+/* ---------- prose ---------- */
+
+.prose-site {
+  --tw-prose-body: var(--color-ink-2);
+  --tw-prose-headings: var(--color-ink);
+  --tw-prose-links: var(--color-ink);
+  --tw-prose-bold: var(--color-ink);
+  --tw-prose-code: var(--color-ink);
+  --tw-prose-quotes: var(--color-ink-2);
+  --tw-prose-hr: var(--color-line);
+  --tw-prose-th-borders: var(--color-line);
+  --tw-prose-td-borders: var(--color-line);
+  --tw-prose-bullets: var(--color-muted);
+  --tw-prose-counters: var(--color-muted);
+}
+
+.prose-site :where(a) {
+  text-decoration-color: color-mix(in oklab, var(--color-brand) 55%, transparent);
+  text-underline-offset: 3px;
+}
+
+.prose-site :where(a:hover) {
+  color: var(--color-brand);
+}
+
+.prose-site :where(h1, h2, h3, h4) .anchor {
+  color: inherit;
+  text-decoration: none;
+  font-weight: inherit;
+}
+
+.prose-site :where(h2, h3, h4) .anchor:hover::after {
+  content: " #";
+  color: var(--color-brand);
+  font-weight: 400;
+}
+
+.prose-site :where(code):not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: color-mix(in oklab, var(--color-ink) 6%, transparent);
+  border-radius: 0.3rem;
+  padding: 0.12em 0.36em;
+}
+
+.prose-site :where(code):not(pre code)::before,
+.prose-site :where(code):not(pre code)::after {
+  content: none;
+}
+
+.prose-site :where(pre) {
+  padding: 0;
+  background: transparent;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+}
+
+.table-scroll table {
+  margin: 0;
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+.table-scroll :where(th, td) {
+  padding: 0.6rem 0.9rem;
+  vertical-align: top;
+}
+
+.table-scroll thead th {
+  background: color-mix(in oklab, var(--color-ink) 4%, transparent);
+  font-weight: 600;
+  text-align: left;
+}
+
+/* ---------- callouts ---------- */
+
+.callout {
+  border: 1px solid var(--color-line);
+  border-left-width: 3px;
+  border-radius: 0.6rem;
+  padding: 0.9rem 1.1rem;
+  margin: 1.5rem 0;
+  background: var(--color-surface);
+}
+
+.callout :where(p):first-of-type {
+  margin-top: 0;
+}
+
+.callout :where(p):last-child {
+  margin-bottom: 0;
+}
+
+.callout-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 0.35rem;
+}
+
+.callout-brand { border-left-color: var(--color-brand); }
+.callout-brand .callout-label { color: var(--color-brand); }
+.callout-pass { border-left-color: var(--color-pass); }
+.callout-pass .callout-label { color: var(--color-pass); }
+.callout-gap { border-left-color: var(--color-gap); }
+.callout-gap .callout-label { color: var(--color-gap); }
+.callout-fail { border-left-color: var(--color-fail); }
+.callout-fail .callout-label { color: var(--color-fail); }
+.callout-quote { border-left-color: var(--color-muted); font-style: italic; }
+
+/* ---------- comparison panels ---------- */
+
+.panel {
+  border: 1px solid var(--color-line);
+  border-radius: 0.9rem;
+  background: var(--color-surface);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--color-muted);
+}
+
+.panel-tag {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.panel .code-block pre.shiki {
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  font-size: 0.6875rem;
+  line-height: 1.75;
+  padding: 0.9rem 1rem;
+}
