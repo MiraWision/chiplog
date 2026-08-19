@@ -6,16 +6,11 @@ function Mark() {
   return (
     <svg width="22" height="22" viewBox="0 0 32 32" fill="none" aria-hidden="true">
       <rect width="32" height="32" rx="7" fill="var(--color-brand)" />
-      <path
-        d="M6 7c0 6 4 9 10 11.5"
-        stroke="var(--color-brand-ink)"
-        strokeWidth="2"
-        strokeLinecap="round"
-        opacity="0.85"
-      />
-      <circle cx="9.5" cy="9.8" r="1.5" fill="var(--color-brand-ink)" />
-      <circle cx="13.4" cy="13.6" r="1.5" fill="var(--color-brand-ink)" />
-      <path d="M17.5 18.5h8v7h-8z" fill="var(--color-brand-ink)" />
+      {/* The reel the log line was wound on. */}
+      <path d="M7.2 4.6h17.6a1.8 1.8 0 0 1 0 3.6h-1.4c-2.2 2.6-2.2 12.4 0 15h1.4a1.8 1.8 0 0 1 0 3.6H7.2a1.8 1.8 0 0 1 0-3.6h1.4c2.2-2.6 2.2-12.4 0-15H7.2a1.8 1.8 0 0 1 0-3.6z" fill="var(--color-brand-ink)" />
+      <g stroke="var(--color-brand)" strokeWidth="1.9" strokeLinecap="round">
+        <path d="M9.3 13.4h13.4M9.3 18.6h13.4" />
+      </g>
     </svg>
   );
 }

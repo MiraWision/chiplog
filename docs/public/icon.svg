@@ -1,8 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
   <rect width="32" height="32" rx="7" fill="#0f766e"/>
-  <!-- The knotted line, and the chip on the end of it. -->
-  <path d="M6 7c0 6 4 9 10 11.5" stroke="#5eead4" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="9.5" cy="9.8" r="1.5" fill="#99f6e4"/>
-  <circle cx="13.4" cy="13.6" r="1.5" fill="#99f6e4"/>
-  <path d="M17.5 18.5h8v7h-8z" fill="#99f6e4"/>
+  <!-- The reel the log line was wound on. Two turns rather than three: at 16px
+       a third merges into a smudge and the silhouette is all that survives. -->
+  <path d="M7.2 4.6h17.6a1.8 1.8 0 0 1 0 3.6h-1.4c-2.2 2.6-2.2 12.4 0 15h1.4a1.8 1.8 0 0 1 0 3.6H7.2a1.8 1.8 0 0 1 0-3.6h1.4c2.2-2.6 2.2-12.4 0-15H7.2a1.8 1.8 0 0 1 0-3.6z" fill="#99f6e4"/>
+  <g stroke="#0f766e" stroke-width="1.9" stroke-linecap="round"><path d="M9.3 13.4h13.4M9.3 18.6h13.4"/></g>
 </svg>
